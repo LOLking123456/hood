@@ -1,0 +1,441 @@
+local Material = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/MaterialLua/master/Module.lua"))()
+local Settings = {}
+
+local UI = Material.Load({
+     Title = "REALISTIC HOOD TESTING | Legend HandlesYT",
+     Style = 1,
+     SizeX = 350,
+     SizeY = 400,
+     Theme = "Dark"
+})
+
+getgenv().cham = false
+getgenv().nameESP = false
+getgenv().boxESP = false
+
+
+getgenv().esp_loaded = false
+getgenv().Visibility = false
+
+	
+	
+local main = UI.New({Title = "Main-Features"})
+
+
+    	main.Button({
+    	Text = "Aimbot (FOV)",
+    		Callback = function()
+local teamCheck = false
+local fov = 150
+local smoothing = 1
+
+local RunService = game:GetService("RunService")
+
+local FOVring = Drawing.new("Circle")
+FOVring.Visible = true
+FOVring.Thickness = 1.5
+FOVring.Radius = fov
+FOVring.Transparency = 1
+FOVring.Color = Color3.fromRGB(2, 100, 2)
+FOVring.Position = workspace.CurrentCamera.ViewportSize/2
+
+local function getClosest(cframe)
+   local ray = Ray.new(cframe.Position, cframe.LookVector).Unit
+   
+   local target = nil
+   local mag = math.huge
+   
+   for i,v in pairs(game.Players:GetPlayers()) do
+       if v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character:FindFirstChild("HumanoidRootPart") and v ~= game.Players.LocalPlayer and (v.Team ~= game.Players.LocalPlayer.Team or (not teamCheck)) then
+           local magBuf = (v.Character.Head.Position - ray:ClosestPoint(v.Character.Head.Position)).Magnitude
+           
+           if magBuf < mag then
+               mag = magBuf
+               target = v
+           end
+       end
+   end
+   
+   return target
+end
+
+loop = RunService.RenderStepped:Connect(function()
+   local UserInputService = game:GetService("UserInputService")
+   local pressed = --[[UserInputService:IsKeyDown(Enum.KeyCode.E)]] UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) --Enum.UserInputType.MouseButton2
+   local localPlay = game.Players.localPlayer.Character
+   local cam = workspace.CurrentCamera
+   local zz = workspace.CurrentCamera.ViewportSize/2
+   
+   if pressed then
+       local Line = Drawing.new("Line")
+       local curTar = getClosest(cam.CFrame)
+       local ssHeadPoint = cam:WorldToScreenPoint(curTar.Character.Head.Position)
+       ssHeadPoint = Vector2.new(ssHeadPoint.X, ssHeadPoint.Y)
+       if (ssHeadPoint - zz).Magnitude < fov then
+           workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame:Lerp(CFrame.new(cam.CFrame.Position, curTar.Character.Head.Position), smoothing)
+       end
+   end
+   
+   if UserInputService:IsKeyDown(Enum.KeyCode.Delete) then
+       loop:Disconnect()
+       FOVring:Remove()
+   end
+end)
+end})
+
+main.Button({
+    	Text = "Aimbot (Non FOV)",
+    		Callback = function()
+local teamCheck = false
+local fov = 150
+local smoothing = 1
+
+local RunService = game:GetService("RunService")
+
+local FOVring = Drawing.new("Circle")
+FOVring.Visible = false
+FOVring.Thickness = 1.5
+FOVring.Radius = fov
+FOVring.Transparency = 1
+FOVring.Color = Color3.fromRGB(2, 100, 2)
+FOVring.Position = workspace.CurrentCamera.ViewportSize/2
+
+local function getClosest(cframe)
+   local ray = Ray.new(cframe.Position, cframe.LookVector).Unit
+   
+   local target = nil
+   local mag = math.huge
+   
+   for i,v in pairs(game.Players:GetPlayers()) do
+       if v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character:FindFirstChild("HumanoidRootPart") and v ~= game.Players.LocalPlayer and (v.Team ~= game.Players.LocalPlayer.Team or (not teamCheck)) then
+           local magBuf = (v.Character.Head.Position - ray:ClosestPoint(v.Character.Head.Position)).Magnitude
+           
+           if magBuf < mag then
+               mag = magBuf
+               target = v
+           end
+       end
+   end
+   
+   return target
+end
+
+loop = RunService.RenderStepped:Connect(function()
+   local UserInputService = game:GetService("UserInputService")
+   local pressed = --[[UserInputService:IsKeyDown(Enum.KeyCode.E)]] UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) --Enum.UserInputType.MouseButton2
+   local localPlay = game.Players.localPlayer.Character
+   local cam = workspace.CurrentCamera
+   local zz = workspace.CurrentCamera.ViewportSize/2
+   
+   if pressed then
+       local Line = Drawing.new("Line")
+       local curTar = getClosest(cam.CFrame)
+       local ssHeadPoint = cam:WorldToScreenPoint(curTar.Character.Head.Position)
+       ssHeadPoint = Vector2.new(ssHeadPoint.X, ssHeadPoint.Y)
+       if (ssHeadPoint - zz).Magnitude < fov then
+           workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame:Lerp(CFrame.new(cam.CFrame.Position, curTar.Character.Head.Position), smoothing)
+       end
+   end
+   
+   if UserInputService:IsKeyDown(Enum.KeyCode.Delete) then
+       loop:Disconnect()
+       FOVring:Remove()
+   end
+end)
+end})
+
+
+ main.Toggle({
+	Text = "Visual",
+	Callback = function(Value)
+ if getgenv().esp_loaded == false and Value == true then
+            getgenv().esp_loaded = true
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/skatbr/Roblox-Releases/main/A_simple_esp.lua", true))()
+        end
+        getgenv().Visibility = Value
+            
+	end,
+	Enabled = false
+})
+
+
+ main.Toggle({
+	Text = "Box ESP",
+	Callback = function(Value)
+ if getgenv().esp_loaded == false and Value == true then
+            getgenv().esp_loaded = true
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/skatbr/Roblox-Releases/main/A_simple_esp.lua", true))()
+        end
+        getgenv().boxESP = Value
+		end,
+	Enabled = false
+})
+ 
+
+ main.Toggle({
+	Text = "Name ESP",
+	Callback = function(Value)
+ if getgenv().esp_loaded == false and Value == true then
+            getgenv().esp_loaded = true
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/skatbr/Roblox-Releases/main/A_simple_esp.lua", true))()
+        end
+        getgenv().nameESP = Value
+		end,
+	Enabled = false
+})
+
+
+main.Toggle({
+	Text = "Chams",
+	Callback = function(Value)
+   if getgenv().esp_loaded == false and Value == true then
+            getgenv().esp_loaded = true
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/skatbr/Roblox-Releases/main/A_simple_esp.lua", true))()
+        end
+        getgenv().cham = Value
+		end,
+	Enabled = false
+})
+
+
+main.Button({
+	Text = "Invisible",
+		Callback = function()
+		     local removeNametags = false -- remove custom billboardgui nametags from hrp, could trigger anticheat
+
+local plr = game:GetService("Players").LocalPlayer
+local character = plr.Character
+local hrp = character.HumanoidRootPart
+local old = hrp.CFrame
+
+if not character:FindFirstChild("LowerTorso") or character.PrimaryPart ~= hrp then
+return print("unsupported")
+end
+
+if removeNametags then
+local tag = hrp:FindFirstChildOfClass("BillboardGui")
+if tag then tag:Destroy() end
+
+hrp.ChildAdded:Connect(function(item)
+if item:IsA("BillboardGui") then
+task.wait()
+item:Destroy()
+end
+end)
+end
+
+local newroot = character.LowerTorso.Root:Clone()
+hrp.Parent = workspace
+character.PrimaryPart = hrp
+character:MoveTo(Vector3.new(old.X,9e9,old.Z))
+hrp.Parent = character
+task.wait(0.5)
+newroot.Parent = hrp
+hrp.CFrame = old
+		    
+		end})
+
+
+local main1 = UI.New({
+    Title = "Player"
+})
+
+	main1.Button({
+	Text = "CFrame Speed (Z)",
+		Callback = function()
+        repeat
+		wait()
+	until game:IsLoaded()
+	local L_134_ = game:service('Players')
+	local L_135_ = L_134_.LocalPlayer
+	repeat
+		wait()
+	until L_135_.Character
+	local L_136_ = game:service('UserInputService')
+	local L_137_ = game:service('RunService')
+	getgenv().Multiplier = 0.5
+	local L_138_ = true
+	local L_139_
+	L_136_.InputBegan:connect(function(L_140_arg0)
+		if L_140_arg0.KeyCode == Enum.KeyCode.LeftBracket then
+			Multiplier = Multiplier + 0.01
+			print(Multiplier)
+			wait(0.2)
+			while L_136_:IsKeyDown(Enum.KeyCode.LeftBracket) do
+				wait()
+				Multiplier = Multiplier + 0.01
+				print(Multiplier)
+			end
+		end
+		if L_140_arg0.KeyCode == Enum.KeyCode.RightBracket then
+			Multiplier = Multiplier - 0.01
+			print(Multiplier)
+			wait(0.2)
+			while L_136_:IsKeyDown(Enum.KeyCode.RightBracket) do
+				wait()
+				Multiplier = Multiplier - 0.01
+				print(Multiplier)
+			end
+		end
+		if L_140_arg0.KeyCode == Enum.KeyCode.Z then
+			L_138_ = not L_138_
+			if L_138_ == true then
+				repeat
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame + game.Players.LocalPlayer.Character.Humanoid.MoveDirection * Multiplier
+					game:GetService("RunService").Stepped:wait()
+				until L_138_ == false
+			end
+		end
+	end)
+        end})
+main1.Slider({
+	Text = "CFrame Speed",
+	Callback = function(s)
+ 
+ getgenv().Multiplier = s
+	end,
+	Min = 0,
+	Max = 5,
+	Def = 0
+})
+
+
+
+
+ main1.Toggle({
+	Text = "Infinite Jump",
+	Callback = function(state)
+ if state then
+_G.infinjump = true
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+Mouse.KeyDown:connect(function(k)
+if _G.infinjump then
+if k:byte() == 32 then
+Humanoid = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+Humanoid:ChangeState("Jumping")
+wait(0.1)
+Humanoid:ChangeState("Seated")
+end
+end
+end)
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+    else
+if _G.infinjump == true then
+_G.infinjump = false
+else
+_G.infinjump = true
+end
+end
+            
+	end,
+	Enabled = false
+})
+
+
+
+
+
+
+main1.Button({
+	Text = "(L) Lag Server",
+		Callback = function()
+		    getgenv().Toggled=false
+getgenv().KeyBind="L"
+getgenv().Delay=0.7
+local UIS=game:GetService'UserInputService'
+
+--//main
+
+local function Source()
+game:GetService("NetworkClient"):SetOutgoingKBPSLimit(math.huge)
+local function getmaxvalue(val) 
+   local mainvalueifonetable = 49999
+   if type(val) ~= "number" then
+       return nil 
+   end
+   local calculateperfectval = (mainvalueifonetable/(val+2))
+   return calculateperfectval 
+end
+
+local function bomb(tableincrease, tries) 
+ local maintable = {}
+ local spammedtable = {}
+ 
+ table.insert(spammedtable, {})
+ z = spammedtable[1]
+ 
+ for i = 1, tableincrease do
+    local tableins = {}
+    table.insert(z, tableins)
+    z = tableins
+ end 
+ 
+ local calculatemax = getmaxvalue(tableincrease) 
+ local maximum 
+ 
+ if calculatemax then
+     maximum = calculatemax
+     else
+     maximum = 10000
+ end
+ 
+ for i = 1, maximum do
+     table.insert(maintable, spammedtable)
+ end 
+ 
+  if calculatemax then
+     maximum = calculatemax
+     else
+     maximum = 10000
+ end
+ 
+ for i = 1, maximum do
+     table.insert(maintable, spammedtable)
+ end 
+
+ for i = 1, tries do
+    game.RobloxReplicatedStorage.UpdatePlayerBlockList:FireServer(maintable)
+ end
+end
+
+
+bomb(250, 5) --// change values if client crashes
+end
+UIS.InputBegan:Connect(function(Key)
+    if Key.KeyCode==Enum.KeyCode[getgenv().KeyBind:upper()] and not UIS:GetFocusedTextBox() then
+        if getgenv().Toggled then
+            getgenv().Toggled=false
+            warn'Disabled!'
+        elseif not getgenv().Toggled then
+            getgenv().Toggled=true
+            warn'Enabled!'
+            while getgenv().Toggled do
+                Source()
+                wait(getgenv().Delay)
+            end
+        end
+    end
+end)
+		    
+		    end})
+
+
+-- // Credits \\ --
+local cred = UI.New({
+    Title = "Credits"
+})
+
+local creators = {
+    "YT: Legend Handles",
+}
+
+for i,v in pairs(creators) do 
+    cred.Button({
+        Text = v,
+        Callback = function()
+            setclipboard(v) 
+        end;
+    });
+end;
